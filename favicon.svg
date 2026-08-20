@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- Same peaks as assets/logo-mark.svg, minus the ring, which turns to mush
+       at 16px. Solid fills for the same reason. -->
+  <rect width="64" height="64" rx="8" fill="#07080a"/>
+  <g transform="translate(4.35 10.25) scale(0.125)">
+    <path d="M300 148 L318 196 L310 192 L340 248 L332 244 L424 297 L258 300 L276 250 L270 246 L288 192 Z" fill="#3f8fd4"/>
+    <path d="M222 88 L240 142 L232 145 L254 200 L246 196 L258 262 L252 294 L20 294 L88 246 L120 220 L133 226 L158 190 L170 196 L180 222 L200 140 L192 148 L208 116 Z"
+          fill="#f2f8fc" stroke="#07080a" stroke-width="14" stroke-linejoin="round"/>
+  </g>
+</svg>

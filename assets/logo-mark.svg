@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="6 38 428 274" role="img" aria-label="SummitDev">
+  <!-- ===================================================================
+       The SummitDev summit mark, drawn as vector so it stays sharp at any
+       size. This one file feeds every logo on the site: the page headers
+       and footers all reference it with <img src="assets/logo-mark.svg">.
+       Edit here once and it updates everywhere.
+       =================================================================== -->
+  <defs>
+    <linearGradient id="sd-arc" gradientUnits="userSpaceOnUse" x1="110" y1="252" x2="342" y2="58">
+      <stop offset="0" stop-color="#1e5f9c"/>
+      <stop offset="0.5" stop-color="#8cc4ee"/>
+      <stop offset="1" stop-color="#2f80c9"/>
+    </linearGradient>
+    <linearGradient id="sd-snow" x1="0.1" y1="0" x2="0.95" y2="1">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="0.55" stop-color="#eaf3fa"/>
+      <stop offset="1" stop-color="#cfe1f0"/>
+    </linearGradient>
+    <linearGradient id="sd-blue" x1="0.05" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#9ecdf1"/>
+      <stop offset="0.4" stop-color="#3f8fd4"/>
+      <stop offset="1" stop-color="#15507f"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Ring, open at the base so the peaks sit in front of it -->
+  <path d="M108 214 A122 122 0 1 1 336 214" fill="none" stroke="url(#sd-arc)" stroke-width="7" stroke-linecap="round"/>
+
+  <!-- Blue peak: notched left face, long slope swept out to a point on the right -->
+  <path d="M300 148 L318 196 L310 192 L340 248 L332 244 L424 297 L258 300 L276 250 L270 246 L288 192 Z" fill="url(#sd-blue)"/>
+
+  <!-- White massif: main spire with a crevasse slot, a shoulder summit and
+       valley to its left, then the long swept needle base. The dark stroke
+       keeps it reading clear of the blue peak behind it. -->
+  <path d="M222 88 L240 142 L232 145 L254 200 L246 196 L258 262 L252 294 L20 294 L88 246 L120 220 L133 226 L158 190 L170 196 L180 222 L200 140 L192 148 L208 116 Z"
+        fill="url(#sd-snow)" stroke="#07080a" stroke-width="3.5" stroke-linejoin="round"/>
+</svg>
