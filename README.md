@@ -7,14 +7,16 @@ Open any `.html` file to edit it; changes are live on refresh.
 index.html              Home
 web-development.html    Web development service page
 seo.html                SEO / local search service page
-work.html               Portfolio (placeholder slots — see below)
+work.html               Portfolio — 2 live projects
 about.html              About / how we work
 contact.html            Free estimate form
 404.html                Not found
 styles.css              All styles (design tokens at the top)
 main.js                 Nav drawer, form validation, form submit
 favicon.svg             Browser tab icon
+vercel.json             Headers, caching, clean URLs
 assets/logo-mark.svg    The summit mark on its own
+assets/work-*.jpg       Portfolio screenshots
 ```
 
 ## Design system
@@ -43,15 +45,22 @@ contact page, the estimate form, and the business schema in `index.html`:
 
 - **Phone** — (786) 830-0888, linked as `tel:+17868300888`
 - **Email** — SummitDevSupport@gmail.com
-- **Domain** — `https://summitdev.dev`, set in every canonical and og tag,
+- **Domain** — `https://www.summitdev.dev`, set in every canonical and og tag,
   `sitemap.xml`, `robots.txt`, and the business schema
 
 To change any of them later, search and replace across `*.html` and `main.js`. The
 phone appears in three forms: display `(786) 830-0888`, link `tel:+17868300888`, and
 schema `+1-786-830-0888`.
 
+> **`www` is the canonical host.** Every absolute URL on the site points at
+> `www.summitdev.dev`. In Vercel, add **both** `summitdev.dev` and
+> `www.summitdev.dev` under *Settings → Domains* and set the **www one as primary**,
+> so the bare apex 308-redirects to it. If the apex is left as primary, every
+> canonical tag will disagree with the URL Google actually lands on, which splits
+> ranking signals across two hostnames.
+
 > **`.dev` is HTTPS-only.** The whole TLD sits on the browsers' HSTS preload list, so
-> `http://summitdev.dev` will not load at all — there is no insecure fallback to
+> `http://www.summitdev.dev` will not load at all — there is no insecure fallback to
 > misconfigure. Vercel issues the certificate automatically, so this needs nothing
 > from you; just never link to the site with `http://`.
 
@@ -64,13 +73,47 @@ schema `+1-786-830-0888`.
 
 Also:
 
-1. **Portfolio.** `work.html` ships with three empty project slots and a comment
-   block explaining how to fill each one. Replace them with real projects or delete
-   the section — do not publish the placeholder text.
-2. **Social image.** Save a 1200×630 PNG to `assets/og-image.png`. The logo on the
+1. **Social image.** Save a 1200×630 PNG to `assets/og-image.png`. The logo on the
    black background works well.
-3. **Send one real test through the estimate form** after deploying, to confirm
+2. **Send one real test through the estimate form** after deploying, to confirm
    delivery and to train Gmail not to file it as spam.
+
+## URLs
+
+`cleanUrls` is **on**, so pages are served without the `.html` extension:
+
+| File | URL |
+|---|---|
+| `index.html` | `https://www.summitdev.dev/` |
+| `seo.html` | `https://www.summitdev.dev/seo` |
+| `web-development.html` | `https://www.summitdev.dev/web-development` |
+
+Every internal link, canonical tag, `og:url`, and `sitemap.xml` entry is written in
+that extensionless form already, so no navigation takes a redirect hop.
+
+**Adding a page:** create `whatever.html`, link to it as `/whatever` (root-relative,
+no extension), and add the matching `<loc>` to `sitemap.xml`. Keep the canonical tag
+in the new page consistent with the sitemap entry.
+
+## The portfolio
+
+`work.html` holds the real projects. To add one, copy an
+`<article class="work__item">` block and update the heading, copy, tags, and link.
+Every second project puts its screenshot on the opposite side automatically.
+
+Screenshots live in `assets/` at 1280×800 (16:10, matching the card's aspect ratio).
+To capture a new one without any tooling, Chrome can do it from the command line:
+
+```bash
+chrome --headless=new --hide-scrollbars --virtual-time-budget=15000 --window-size=1280,800 --screenshot="assets/work-client.jpg" "https://clientsite.com"
+```
+
+Sites with an intro animation may capture mid-preloader; if that happens, take the
+screenshot by hand instead. Keep files under ~200 KB.
+
+Give the first project's image `fetchpriority="high"` and no `loading` attribute — it
+is near the fold and lazy-loading it delays the largest paint. Every project after
+the first should keep `loading="lazy"`.
 
 ## The logo
 
@@ -119,22 +162,19 @@ any endpoint that accepts a JSON `POST` — Formspree, Basin, Netlify Forms, or 
 serverless route. With both empty, the form falls back to opening the visitor's mail
 client, pre-filled.
 
-Prefer a different service? Leave `WEB3FORMS_KEY` empty and set `FORM_ENDPOINT` to any
-endpoint that accepts a JSON `POST` — Formspree, Basin, Netlify Forms, or your own
-serverless route. The form posts the raw fields as JSON in that case.
-
-**Test it after wiring:** submit the form on the live site once and confirm the email
-arrives — check the spam folder the first time, and mark it "not spam" so later ones
-land in the inbox.
-
 ## Running it locally
 
+Because the links are extensionless (`/seo`, not `/seo.html`), a plain static file
+server will 404 on them — it needs to know to try `seo.html`. Use Vercel's own dev
+server, which applies `vercel.json` exactly as production does:
+
 ```bash
-python -m http.server 4321
+npx vercel dev
 ```
 
-Then open `http://localhost:4321`. Opening the files directly with `file://` works
-too, but a server matches production more closely.
+Opening the files directly with `file://` will **not** work any more: root-relative
+links like `/seo` resolve to the filesystem root rather than this folder. Use the
+command above.
 
 ## Deploying to Vercel
 
@@ -170,11 +210,13 @@ automatically.
   `stale-while-revalidate`. This matters here: the filenames never change (there is
   no build hashing them), so a long cache on `styles.css` would leave returning
   visitors stuck on an old stylesheet for as long as the cache lasts.
-- **`cleanUrls` is off** so the deployed URLs match the `.html` links in the pages
-  exactly — no redirect on every click, and the site behaves the same locally as it
-  does live. Turning it on would serve `/seo` instead of `/seo.html`, but then every
-  internal link would take a 308 redirect first unless all the hrefs, canonical tags,
-  and `sitemap.xml` were rewritten to match.
+- **`cleanUrls` is on**, serving `/seo` rather than `/seo.html`. Every internal link,
+  canonical, `og:url`, and sitemap entry is already written that way, so no click
+  eats a 308 redirect. Vercel still 308-redirects any stray `/seo.html` request to
+  `/seo`, which keeps old links and any already-indexed URLs working.
+- **`trailingSlash` is false**, which matters more than it looks: relative asset
+  paths like `assets/logo-mark.svg` resolve correctly from `/work` but would break
+  from `/work/`. Leave it off.
 - `404.html` is picked up automatically for unknown paths.
 
 `.vercelignore` keeps `.claude/` and the readmes out of the deployment.

@@ -111,7 +111,7 @@ a.inline:hover { border-bottom-color: var(--blue-300); }
 
 strong { color: var(--snow); font-weight: 600; }
 
-/* Survey label — the mono eyebrow that numbers every section */
+/* Mono eyebrow that labels each section */
 .rubric {
   display: flex; align-items: center; gap: var(--s-3);
   font: 500 11px/1 var(--mono);
@@ -119,10 +119,6 @@ strong { color: var(--snow); font-weight: 600; }
   text-transform: uppercase;
   color: var(--blue-300);
   margin-bottom: var(--s-5);
-}
-.rubric::before {
-  content: ''; width: 28px; height: 1px;
-  background: var(--blue-500); flex: none;
 }
 .rubric span { color: var(--fg-dim); }
 
@@ -432,7 +428,9 @@ strong { color: var(--snow); font-weight: 600; }
   background: var(--ink-850);
   align-items: center;
 }
-.work__item:nth-child(even) .work__shot { order: -1; }
+/* Alternate the screenshot to the right on every second project. The shot is
+   already first in the DOM, so this has to push it *after* the copy. */
+.work__item:nth-child(even) .work__shot { order: 2; }
 .work__shot {
   aspect-ratio: 16 / 10;
   background: var(--ink-750) var(--contour);
